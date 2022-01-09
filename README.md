@@ -1,5 +1,5 @@
 # Holiday Manager
-This is applicaation that tracks holidays.
+This is an applicaation that tracks holidays.
 
 When the program starts it loads initial holiday data from the given json file.
 Then it scrapes additional holidays from https://www.timeanddate.com/holidays/us/ the present year, 2 years of past holidays, and 2 years of future holidays.
@@ -7,8 +7,9 @@ Then it scrapes additional holidays from https://www.timeanddate.com/holidays/us
 
 After that it will show menu options for interactions.
 
+![main menu](./main_menu.png)
 
-
+Sample run
 
 
 
