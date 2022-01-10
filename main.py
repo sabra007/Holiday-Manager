@@ -5,6 +5,7 @@ import requests
 from dataclasses import dataclass
 from pprint import pprint
 import time
+import config
 
 # -------------------------------------------
 # Modify the holiday class to 
@@ -303,7 +304,7 @@ class HolidayList:
 
         headers = {
             'x-rapidapi-host': "weatherapi-com.p.rapidapi.com",
-            'x-rapidapi-key': "73e5e9c4f7mshefda31d0b9ae073p1fd4bbjsnc72ddd2c4eee"
+            'x-rapidapi-key': config.api_key
             }
 
         response = requests.request("GET", url, headers=headers, params=querystring)
