@@ -35,9 +35,10 @@ class Holiday:
 @dataclass
 class HolidayList:
     def __init__(self):
+        self.innerHolidays = []
+        self.changes = False
+        self.running = True
 
-       self.innerHolidays = []
-    
     # this function has been copied from stackoverflow
     # https://stackoverflow.com/questions/16870663/how-do-i-validate-a-date-string-format-in-python
     
@@ -49,6 +50,7 @@ class HolidayList:
     #         print("Incorrect data format, should be YYYY-MM-DD")
 
     def  addHoliday(self):
+        self.changes = True
         # temp input will be separrated later
         date = ""
 
@@ -86,6 +88,7 @@ class HolidayList:
         # Return Holiday
         pass
     def removeHoliday(self):
+        self.changes = True
         print("remove holiday called")
         pass
 
@@ -112,10 +115,18 @@ class HolidayList:
         
 
     def save_to_json(self):
-        print("save to json called\nCalling helper")
-
-        self.save_to_json_Helper('holidays.json')
         
+        while 1:
+            choice = input("Are you sure you want to save your changes? [y/n]:")
+
+            if choice == 'y':
+                self.save_to_json_Helper('holidays.json')
+                break;
+            elif choice == 'n':
+                print("Canceled:\nHoliday list file save canceled.")
+                break;
+            else:
+                print('Invalid input. Try again.\n')
 
 
     def save_to_json_Helper(self, filelocation):
@@ -132,6 +143,8 @@ class HolidayList:
 
         with open(filelocation, 'w') as j_file:
             j_file.write(holidays_json)
+        self.changes = False
+        print("Success:\nYour changes have been saved.")
 
 
     
@@ -140,6 +153,7 @@ class HolidayList:
         return response.text
 
     def scrapeHolidays(self):
+        self.changes = True
         # Scrape Holidays from https://www.timeanddate.com/holidays/us/ 
         # Remember, 2 previous years, current year, and 2  years into the future. You can scrape multiple years 
         # by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
@@ -147,7 +161,7 @@ class HolidayList:
         # Add non-duplicates to innerHolidays
         # Handle any exceptions.
 
-        for x in range(2020,2025):
+        for x in range(dt.date.today().year-2,dt.date.today().year+3):
 
             html = self.getHTML(f"https://www.timeanddate.com/holidays/us/{x}")
             soup = BeautifulSoup(html, 'html.parser')
@@ -208,8 +222,23 @@ class HolidayList:
 
 
     def exit(self):
-        print("exit Called")
-        pass
+
+        st = ""
+        while 1:
+            if self.changes:
+                st = "\nYour changes will be lost.\n"
+           
+            choice = input(f"Are you sure you want to exit? {st}[y/n]")
+
+            if choice == 'y':
+                self.running = False
+                print("Goodbye!")
+                return
+            elif choice == 'n':
+                print("Canceled exit.")
+                return
+            else:
+                print('Invalid input. Try again.\n')
 
     def printList(self):
         
@@ -232,8 +261,6 @@ def main():
     # holidayList.addHolidayManually()
     # holidayList.addHolidayManually()
     
-    
-
     # 2. Load JSON file via HolidayList read_json function
     print("Loading data from file")
     time.sleep(1)
@@ -248,8 +275,11 @@ def main():
     # 4. Create while loop for user to keep adding or working with the Calender
     # holidayList.printList()
     # 4. Display User Menu (Print the menu)
-        
-    while 1:
+    # 5. Take user input for their action based on Menu and check the user input for errors
+    # 6. Run appropriate method from the HolidayList object depending on what the user input is
+    # 7. Ask the User if they would like to Continue, if not, end the while loop, ending the program.  If they do wish to continue, keep the program going. 
+    
+    while holidayList.running:
         print("\nHoliday Management")
         print("===================")
         print(f"There are {holidayList.numHolidays()} holidays stored in the system.")
@@ -262,16 +292,11 @@ def main():
                 break;
             else:
                 print("Invalid Input. Try again.")
-
+        
         menu = [holidayList.addHoliday, holidayList.removeHoliday, holidayList.save_to_json, holidayList.viewCurrentWeek, holidayList.exit]
         menu[choice-1]()
 
-    # 5. Take user input for their action based on Menu and check the user input for errors
-    # 6. Run appropriate method from the HolidayList object depending on what the user input is
-    # 7. Ask the User if they would like to Continue, if not, end the while loop, ending the program.  If they do wish to continue, keep the program going. 
-    
-    
-    pass
+
 
 if __name__ == "__main__":
     main();
