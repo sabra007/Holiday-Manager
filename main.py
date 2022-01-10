@@ -51,21 +51,29 @@ class HolidayList:
 
     def  addHoliday(self):
         self.changes = True
-        # temp input will be separrated later
-        date = ""
+        
+        while 1:
+            holiday = input("Holdiay: ")
+            if not holiday:
+                print("Holiday name can't be empty. Try again.")
+            else:
+                while 1:
+                    
+                    date = input("Date: ")
 
-        # while isinstance(date):
-        #     date = input("Enter date: ")
-        #     self.validate(date)
-        #     print("invalid date")
-        #     date = input("Enter date: ")
+                    date_string = date
+                    date_format = '%Y-%m-%d'
 
-        # holiday = input("Enter holdiay: ")
-
-        # holli = Holiday(holiday, date)
-        # self.innerHolidays.append(holli)
-        print("holiday has been added")
-
+                    try:
+                        date_obj = dt.datetime.strptime(date_string, date_format)
+                        date = date_obj.strftime('%Y-%m-%d')
+                        self.addHolidayHelper(Holiday(holiday, date))
+                        break;
+                    except ValueError:
+                        print("Incorrect data format, should be YYYY-MM-DD.")
+                else:
+                    continue
+                break;
         ####
 
     def addHolidayHelper(self, holidayObj):
