@@ -143,17 +143,18 @@ class HolidayList:
     def read_json(self, filelocation):
         # Read in things from json file location
         # Use addHoliday function to add holidays to inner list.
-
-        with open(filelocation, 'r') as j:
-            holidays = json.loads(j.read())
-
-        for holiday in holidays['holidays']:
-            date = holiday['date']
-            holiday_name = holiday['name']
-            new_date = dt.datetime.strptime(date, '%Y-%m-%d')
-
-            self.addHolidayHelper(Holiday(holiday_name, new_date))
+        try:
+            with open(filelocation, 'r') as j:
+                holidays = json.loads(j.read())
         
+            for holiday in holidays['holidays']:
+                date = holiday['date']
+                holiday_name = holiday['name']
+                new_date = dt.datetime.strptime(date, '%Y-%m-%d')
+
+                self.addHolidayHelper(Holiday(holiday_name, new_date))
+        except:
+            return
 
     def save_to_json(self):
         print("\nSaving Holiday List")
