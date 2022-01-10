@@ -49,31 +49,40 @@ class HolidayList:
     #     except ValueError:
     #         print("Incorrect data format, should be YYYY-MM-DD")
 
-    def  addHoliday(self):
-        self.changes = True
-        
+    def getValidDate(self):
         while 1:
-            holiday = input("Holdiay: ")
+                    
+            date = input("Date: ")
+
+            date_string = date
+            date_format = '%Y-%m-%d'
+
+            try:
+                date_obj = dt.datetime.strptime(date_string, date_format)
+                date = date_obj.strftime('%Y-%m-%d')
+                return date
+                
+            except ValueError:
+                print("Incorrect data format, should be YYYY-MM-DD.")
+
+    def getHolidayName(self):
+        while 1:
+            holiday = input("Holdiay Name: ")
             if not holiday:
                 print("Holiday name can't be empty. Try again.")
             else:
-                while 1:
-                    
-                    date = input("Date: ")
+                return holiday
+                
 
-                    date_string = date
-                    date_format = '%Y-%m-%d'
+        
+    def  addHoliday(self):
+        self.changes = True
+    
+        holiday = self.getHolidayName()
+        date = self.getValidDate()
+        self.addHolidayHelper(Holiday(holiday, date))
+             
 
-                    try:
-                        date_obj = dt.datetime.strptime(date_string, date_format)
-                        date = date_obj.strftime('%Y-%m-%d')
-                        self.addHolidayHelper(Holiday(holiday, date))
-                        break;
-                    except ValueError:
-                        print("Incorrect data format, should be YYYY-MM-DD.")
-                else:
-                    continue
-                break;
         ####
 
     def addHolidayHelper(self, holidayObj):
@@ -91,23 +100,40 @@ class HolidayList:
            
         
 
-    def findHoliday(HolidayName, Date):
-        # Find Holiday in innerHolidays
-        # Return Holiday
-        pass
+    def findHoliday(self, HolidayName, Date):
+
+        holiday = Holiday(HolidayName, Date)
+
+        if holiday in self.innerHolidays:
+            return holiday
+        else:
+            print(f"Error {HolidayName} ({Date}) not found")
+        
+
     def removeHoliday(self):
         self.changes = True
-        print("remove holiday called")
-        pass
+        name = self.getHolidayName()
+        date = self.getValidDate()
+
+        self.removeHolidayHelper(name, date)
+        
 
     def removeHolidayHelper(self, HolidayName, Date):
-        print("remove holiday called")
+        
         # Find Holiday in innerHolidays by searching the name and date combination.
-        # remove the Holiday from innerHolidays
-        # inform user you deleted the holiday
-        pass
-
-
+        holiday = self.findHoliday(HolidayName, Date)
+        
+        if holiday is None:
+            return
+        else:
+            # remove the Holiday from innerHolidays
+            self.innerHolidays.remove(holiday)
+            
+            # inform user you deleted the holiday
+            print(f"Success:\n{HolidayName} ({Date}) has been removed from the holiday list.")
+      
+        
+    
     def read_json(self, filelocation):
         # Read in things from json file location
         # Use addHoliday function to add holidays to inner list.
