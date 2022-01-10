@@ -78,7 +78,7 @@ class HolidayList:
 
         
     def  addHoliday(self):
-        print("Add a Holiday")
+        print("\nAdd a Holiday")
         print("================")     
         self.changes = True
     
@@ -115,7 +115,7 @@ class HolidayList:
         
 
     def removeHoliday(self):
-        print("Remove a Holiday")
+        print("\nRemove a Holiday")
         print("================") 
         self.changes = True
         name = self.getHolidayName()
@@ -156,7 +156,7 @@ class HolidayList:
         
 
     def save_to_json(self):
-        print("Saving Holiday List")
+        print("\nSaving Holiday List")
         print("================")
         while 1:
             choice = input("Are you sure you want to save your changes? [y/n]:")
@@ -239,11 +239,50 @@ class HolidayList:
 
         return holidays
 
-    def displayHolidaysInWeek(holidayList):
+
+    def viewHolidays(self):
         # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
         # Output formated holidays in the week. 
         # * Remember to use the holiday __str__ method.
-        pass
+        print("\nView Holidays")
+        print("=================")
+        current_year = dt.date.today().year
+        while 1:
+            year_input = input(f"Which year?[{current_year-2}-{current_year+2} Leave blank for the current year]: ")
+            if not year_input:
+                year_input = str(current_year)
+
+            if year_input.isdigit() and int(year_input) in range(current_year - 2, current_year + 3):
+                
+                while 1:
+                    week_input = input("Which week? #[1-52, Leave blank for the current week]: ")
+                    if not week_input:
+                        self.viewCurrentWeek()
+
+                        break;
+
+                    elif week_input.isdigit() and int(week_input) > 0 and int(week_input) <= 52:
+                        
+                        self.displayHolidaysInWeek(int(year_input), int(week_input))
+
+                        break;
+                    else:
+                        print("Invalid Input. Try again.")
+                else:
+                    continue #Only executed if the innder loop DID NOT break
+
+                break; #Only executed if the innder loop DID break
+            else:
+                print("Invalid Input. Try again.")
+
+
+    def displayHolidaysInWeek(self, year, week):
+
+        holidays = self.filter_holidays_by_week(year, week)
+
+        print(f"\nThese are the holidays for {year} week #{week}:")
+
+        list(map(lambda x: print(x), holidays))
 
     def getWeather(weekNum):
         print("get weather Called")
@@ -254,25 +293,26 @@ class HolidayList:
         pass
     
     def viewCurrentWeek(self):
-        print("view holidays Called")
         # Use the Datetime Module to look up current week and year
         # Use your filter_holidays_by_week function to get the list of holidays 
         # for the current week/year
         # Use your displayHolidaysInWeek function to display the holidays in the week
         # Ask user if they want to get the weather
         # If yes, use your getWeather function and display results
+        choice = input("Would you like to see this week's weather? [y/n]: ")
+
         pass
 
 
     def exit(self):
-        print("Exit")
+        print("\nExit")
         print("================")
         st = ""
         while 1:
             if self.changes:
                 st = "\nYour changes will be lost.\n"
            
-            choice = input(f"Are you sure you want to exit? {st}[y/n]")
+            choice = input(f"Are you sure you want to exit? {st}[y/n]: ")
 
             if choice == 'y':
                 self.running = False
@@ -290,7 +330,7 @@ class HolidayList:
             print(h)
 
 def printMenu():
-    print("Holiday Menu")
+    print("\nHoliday Menu")
     print("================")
     print("1. Add a Holiday")
     print("2. Remove a Holiday")
@@ -339,7 +379,7 @@ def main():
             else:
                 print("Invalid Input. Try again.")
         
-        menu = [holidayList.addHoliday, holidayList.removeHoliday, holidayList.save_to_json, holidayList.viewCurrentWeek, holidayList.exit]
+        menu = [holidayList.addHoliday, holidayList.removeHoliday, holidayList.save_to_json, holidayList.viewHolidays, holidayList.exit]
         menu[choice-1]()
 
 
