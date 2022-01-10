@@ -18,11 +18,13 @@ class Holiday:
         self.name = name
         self.date = date
 
+    def as_dict(self):
+        return {'name': self.name, 'date': str(self.date.date())}
 
     def __str__ (self):
         # String output
         # Holiday output when printed.
-        return f"{self.name} ({self.date})"
+        return f"{self.name} ({self.date.date()})"
 
     def __eq__ (self, other):
         return (self.name == other.name and self.date == other.date)
@@ -59,8 +61,8 @@ class HolidayList:
 
             try:
                 date_obj = dt.datetime.strptime(date_string, date_format)
-                date = date_obj.strftime('%Y-%m-%d')
-                return date
+                # date = date_obj.strftime('%Y-%m-%d')
+                return date_obj
                 
             except ValueError:
                 print("Incorrect data format, should be YYYY-MM-DD.")
@@ -76,6 +78,8 @@ class HolidayList:
 
         
     def  addHoliday(self):
+        print("Add a Holiday")
+        print("================")     
         self.changes = True
     
         holiday = self.getHolidayName()
@@ -94,7 +98,7 @@ class HolidayList:
         if isinstance(holidayObj, Holiday):
             if holidayObj not in self.innerHolidays:
                 self.innerHolidays.append(holidayObj)
-                print(f"{holidayObj.name} ({holidayObj.date}) was added to the list.")
+                print(f"{holidayObj.name} ({holidayObj.date.date()}) was added to the list.")
         else:
             print(f"{holidayObj} is not a Holiday object.")
            
@@ -107,10 +111,12 @@ class HolidayList:
         if holiday in self.innerHolidays:
             return holiday
         else:
-            print(f"Error {HolidayName} ({Date}) not found")
+            print(f"Error {HolidayName} ({Date.date()}) not found")
         
 
     def removeHoliday(self):
+        print("Remove a Holiday")
+        print("================") 
         self.changes = True
         name = self.getHolidayName()
         date = self.getValidDate()
@@ -119,7 +125,7 @@ class HolidayList:
         
 
     def removeHolidayHelper(self, HolidayName, Date):
-        
+      
         # Find Holiday in innerHolidays by searching the name and date combination.
         holiday = self.findHoliday(HolidayName, Date)
         
@@ -130,7 +136,7 @@ class HolidayList:
             self.innerHolidays.remove(holiday)
             
             # inform user you deleted the holiday
-            print(f"Success:\n{HolidayName} ({Date}) has been removed from the holiday list.")
+            print(f"Success:\n{HolidayName} ({Date.date()}) has been removed from the holiday list.")
       
         
     
@@ -144,12 +150,14 @@ class HolidayList:
         for holiday in holidays['holidays']:
             date = holiday['date']
             holiday_name = holiday['name']
+            new_date = dt.datetime.strptime(date, '%Y-%m-%d')
 
-            self.addHolidayHelper(Holiday(holiday_name, date))
+            self.addHolidayHelper(Holiday(holiday_name, new_date))
         
 
     def save_to_json(self):
-        
+        print("Saving Holiday List")
+        print("================")
         while 1:
             choice = input("Are you sure you want to save your changes? [y/n]:")
 
@@ -168,8 +176,7 @@ class HolidayList:
         # Write out json file to selected file.
         # get the data from holiday objectd as dictionaries
 
-        serialized = [holiday.__dict__ for holiday in self.innerHolidays]
-
+        serialized = [holiday.as_dict() for holiday in self.innerHolidays]
         f = dict()
         f['holidays'] = list(serialized)
 
@@ -214,8 +221,8 @@ class HolidayList:
                 else:
                     name = holiday_name_tag.text
                     date = dt.datetime.utcfromtimestamp(int(date_tag)/1000).strftime('%Y-%m-%d')
-                    
-                    self.addHolidayHelper(Holiday(name, date))
+                    new_date = dt.datetime.strptime(date, '%Y-%m-%d')
+                    self.addHolidayHelper(Holiday(name, new_date))
 
 
     def numHolidays(self):
@@ -223,12 +230,14 @@ class HolidayList:
         return len(self.innerHolidays)
 
     
-    def filter_holidays_by_week(year, week_number):
+    def filter_holidays_by_week(self, year, week_number):
         # Use a Lambda function to filter by week number and save this as holidays, use the filter on innerHolidays
         # Week number is part of the the Datetime object
         # Cast filter results as list
         # return your holidays
-        pass
+        holidays = list(filter(lambda x: x.date.isocalendar().week == week_number and x.date.isocalendar().year == year, self.innerHolidays))
+
+        return holidays
 
     def displayHolidaysInWeek(holidayList):
         # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
@@ -256,7 +265,8 @@ class HolidayList:
 
 
     def exit(self):
-
+        print("Exit")
+        print("================")
         st = ""
         while 1:
             if self.changes:
@@ -280,6 +290,8 @@ class HolidayList:
             print(h)
 
 def printMenu():
+    print("Holiday Menu")
+    print("================")
     print("1. Add a Holiday")
     print("2. Remove a Holiday")
     print("3. Save Holiday List")
@@ -336,21 +348,7 @@ if __name__ == "__main__":
     main();
 
 
-# Additional Hints:
-# ---------------------------------------------
-# You may need additional helper functions both in and out of the classes, add functions as you need to.
-#
-# No one function should be more then 50 lines of code, if you need more then 50 lines of code
-# excluding comments, break the function into multiple functions.
-#
-# You can store your raw menu text, and other blocks of texts as raw text files 
-# and use placeholder values with the format option.
-# Example:
-# In the file test.txt is "My name is {fname}, I'm {age}"
-# Then you later can read the file into a string "filetxt"
-# and substitute the placeholders 
-# for example: filetxt.format(fname = "John", age = 36)
-# This will make your code far more readable, by seperating text from code.
+
 
 
 
