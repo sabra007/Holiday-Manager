@@ -98,7 +98,7 @@ class HolidayList:
         if isinstance(holidayObj, Holiday):
             if holidayObj not in self.innerHolidays:
                 self.innerHolidays.append(holidayObj)
-                print(f"{holidayObj.name} ({holidayObj.date.date()}) was added to the list.")
+                print(f"{holidayObj} was added to the list.")
         else:
             print(f"{holidayObj} is not a Holiday object.")
            
@@ -136,7 +136,7 @@ class HolidayList:
             self.innerHolidays.remove(holiday)
             
             # inform user you deleted the holiday
-            print(f"Success:\n{HolidayName} ({Date.date()}) has been removed from the holiday list.")
+            print(f"Success:\n{holiday} has been removed from the holiday list.")
       
         
     
@@ -284,24 +284,71 @@ class HolidayList:
 
         list(map(lambda x: print(x), holidays))
 
-    def getWeather(weekNum):
-        print("get weather Called")
+    def getWeather(self, weekNum):
         # Convert weekNum to range between two days
         # Use Try / Except to catch problems
         # Query API for weather in that week range
         # Format weather information and return weather string.
-        pass
+        weekNum = dt.date.today().isocalendar().week
+        yearNum = dt.date.today().year
+        d = dt.date.fromisocalendar(yearNum, weekNum, 1)
+        d2 = dt.date.fromisocalendar(yearNum, weekNum, 7)
+        start_date = str(d)
+        end_date = str(d2)
+
+        url = "https://weatherapi-com.p.rapidapi.com/history.json"
+
+        querystring = {"q":"Minneapolis","dt":start_date,"lang":"en","end_dt":end_date}
+
+        headers = {
+            'x-rapidapi-host': "weatherapi-com.p.rapidapi.com",
+            'x-rapidapi-key': "73e5e9c4f7mshefda31d0b9ae073p1fd4bbjsnc72ddd2c4eee"
+            }
+
+        response = requests.request("GET", url, headers=headers, params=querystring)
+
+        weather = response.json()['forecast']['forecastday']
+        weather_data = []
+        
+        for item in weather:
+            date_d = item['date']
+            temp_t = item['day']['avgtemp_f']
+            weather_cond = item['day']['condition']['text']
+            weather_data.append({'date': date_d, 'weather': f"{temp_t} F, {weather_cond}"})
+
+        return weather_data
     
     def viewCurrentWeek(self):
         # Use the Datetime Module to look up current week and year
+        current_year = dt.date.today().year
+        current_week = dt.date.today().isocalendar().week
+
         # Use your filter_holidays_by_week function to get the list of holidays 
         # for the current week/year
-        # Use your displayHolidaysInWeek function to display the holidays in the week
+        current_week_holidays = self.filter_holidays_by_week(current_year, current_week)
+
         # Ask user if they want to get the weather
         # If yes, use your getWeather function and display results
-        choice = input("Would you like to see this week's weather? [y/n]: ")
+       
+        while 1: 
+            choice = input("Would you like to see this week's weather? [y/n]: ")
+            if choice == 'y':
+                weather = self.getWeather(current_week)
+                print(f"\nThese are the holidays for this week:")
+                for holiday in current_week_holidays:
+                    wd = next((wd for wd in weather if wd["date"] == str(holiday.date.date())), None)
+                    if not wd:
+                        print(f"{holiday} - Weather not avaliable at this time")
+                    else:
+                        print(f"{holiday} - {wd['weather']}")
 
-        pass
+                break;
+            elif choice == 'n':
+                self.displayHolidaysInWeek(current_year, current_week)
+                break;
+            else:
+                print('Invalid input. Try again.\n')
+        
 
 
     def exit(self):
