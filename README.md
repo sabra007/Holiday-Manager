@@ -151,7 +151,7 @@ Goodbye!
 
 ## Flowchart
 ___
-![Flowchart](./flowchart.png)
+![Flowchart](./plans/flowchart.png)
 
 
 Holiday data from: https://www.timeanddate.com/holidays/us/
