@@ -42,15 +42,6 @@ class HolidayList:
         self.changes = False
         self.running = True
 
-    # this function has been copied from stackoverflow
-    # https://stackoverflow.com/questions/16870663/how-do-i-validate-a-date-string-format-in-python
-    
-    # def validate(self, date_text):
-    #     print("do i even get here")
-    #     try:
-    #         dt.datetime.strptime(date_text, '%Y-%m-%d')
-    #     except ValueError:
-    #         print("Incorrect data format, should be YYYY-MM-DD")
 
     def getValidDate(self):
         while 1:
